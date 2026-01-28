@@ -1,0 +1,7 @@
+<h1>Profil użytkownika: {{ user.username }}</h1>
+<img src="{{ user.profil.avatar.url }}" width="150">
+<p>Imię: {{ user.first_name }}</p>
+<p>Nazwisko: {{ user.last_name }}</p>
+<p>Lokalizacja: {{ user.profil.miejscowosc }}</p>
+<p>Wiek: {{ user.profil.wiek }}</p>
+<p>O mnie: {{ user.profil.bio }}</p>

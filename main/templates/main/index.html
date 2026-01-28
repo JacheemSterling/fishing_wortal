@@ -8,7 +8,19 @@
 </head>
 <body>
     <h1>🎣 Witaj na Wędkarskim Portalu!</h1>
-    <p>To Twoja pierwsza strona w Django.</p>
+
+<nav>
+    {% if user.is_authenticated %}
+        <p>Witaj, <strong>{{ user.username }}</strong>!</p>
+        <a href="{% url 'profil' %}" class="btn">Mój Profil</a>
+        <a href="{% url 'logout' %}">Wyloguj się</a>
+    {% else %}
+        <a href="{% url 'login' %}">Zaloguj się</a>
+        <a href="{% url 'register' %}">Zarejestruj się</a>
+    {% endif %}
+</nav>
+
+<p>To Twoja pierwsza strona w Django.</p>
 
     <button id="test-btn">Kliknij mnie</button>
 

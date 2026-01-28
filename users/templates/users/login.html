@@ -1,0 +1,6 @@
+<h2>Zaloguj się na portal</h2>
+<from method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Zaloguj się</button>
+</from>
