@@ -1,0 +1,55 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-info mb-4 text-center">🎣 Twój Dziennik Połowów</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-hover table-dark border-info shadow">
+            <thead class="text-info">
+                <tr>
+                    <th>Data</th>
+                    <th>Gatunek</th>
+                    <th>Waga (kg)</th>
+                    <th>Długość (cm)</th>
+                    <th>Łowisko</th>
+                    <th>Zdjęcie</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for polow in polowy %}
+                <tr>
+                    <td>{{ polow.data_polowu|date:"d.m.Y" }}</td>
+                    <td class="fw-bold">{{ polow.gatunek_ryby }}</td>
+                    <td>{{ polow.waga_ryby }}</td>
+                    <td>{{ polow.dlugosc_ryby }}</td>
+                    <td>{{ polow.lowisko.nazwa }}</td>
+                    <td>
+                        {% if polow.zdjecie_ryby %}
+                            <img src="{{ polow.zdjecie_ryby.url }}" style="height: 50px; border-radius: 5px;" alt="ryba">
+                        {% else %}
+                            <span class="text-muted">Brak</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="{% url 'edytuj_polow' polow.pk %}" class="btn btn-sm btn-outline-warning">
+                                <i class="fas fa-edit"></i> Edytuj
+                            </a>
+                            <a href="{% url 'usun_polow' polow.pk %}" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i> Usuń
+                            </a>
+                         </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Brak wpisów. Dodaj swoją pierwszą rybę!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

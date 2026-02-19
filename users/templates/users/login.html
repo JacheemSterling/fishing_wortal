@@ -1,6 +1,6 @@
 <h2>Zaloguj się na portal</h2>
-<from method="post">
+<form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Zaloguj się</button>
-</from>
+    <button type="submit" class="btn btn-primary">Zaloguj się</button>
+</form>

@@ -1,7 +1,44 @@
-<h1>Profil użytkownika: {{ user.username }}</h1>
-<img src="{{ user.profil.avatar.url }}" width="150">
-<p>Imię: {{ user.first_name }}</p>
-<p>Nazwisko: {{ user.last_name }}</p>
-<p>Lokalizacja: {{ user.profil.miejscowosc }}</p>
-<p>Wiek: {{ user.profil.wiek }}</p>
-<p>O mnie: {{ user.profil.bio }}</p>
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-dark border-info shadow-lg">
+                <div class="card-header border-info text-center py-4">
+                    <div class="rounded-circle bg-info d-inline-block p-3 mb-3">
+                        <i class="fas fa-user-circle fa-4x text-dark"></i>
+                    </div>
+                    <h2 class="text-info">Twój Profil: {{ uzytkownik.username }}</h2>
+                </div>
+                
+                <div class="card-body text-white">
+                    <div class="row text-center mb-4">
+                        <div class="col-6 border-end border-secondary">
+                            <h4 class="text-info mb-0">{{ liczba_ryb }}</h4>
+                            <small class="text-muted text-uppercase">Wypraw nad wodę</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-warning mb-0">
+                                {% if najwieksza %}{{ najwieksza.dlugosc_ryby }} cm{% else %}-{% endif %}
+                            </h4>
+                            <small class="text-muted text-uppercase">Twój Rekord</small>
+                        </div>
+                    </div>
+                    
+                    <div class="px-3">
+                        <p class="mb-2"><i class="fas fa-envelope text-info me-2"></i> <strong>Email:</strong> {{ uzytkownik.email }}</p>
+                        <p class="mb-2"><i class="fas fa-id-card text-info me-2"></i> <strong>Imię:</strong> {{ uzytkownik.first_name|default:"Nie podano" }}</p>
+                        <p class="mb-2"><i class="fas fa-user-tag text-info me-2"></i> <strong>Nazwisko:</strong> {{ uzytkownik.last_name|default:"Nie podano" }}</p>
+                    </div>
+                </div>
+
+                <div class="card-footer border-info text-center py-3">
+                    <a href="{% url 'edytuj_profil' %}" class="btn btn-outline-info btn-sm me-2">Edytuj dane</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Wyloguj się</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

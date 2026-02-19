@@ -1,0 +1,53 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-5 py-4 bg-dark border border-info rounded shadow">
+        <div class="col-md-4 text-center border-end border-secondary">
+            <div class="display-1 text-info"><i class="fas fa-user-circle"></i></div>
+            <h2 class="text-white">{{ wedkarz.username }}</h2>
+            <span class="badge bg-info text-dark">Wędkarz</span>
+        </div>
+        <div class="col-md-8 d-flex align-items-center justify-content-around">
+            <div class="text-center">
+                <h3 class="text-info mb-0">{{ liczba_ryb }}</h3>
+                <small class="text-muted">POŁOWÓW</small>
+            </div>
+            <div class="text-center">
+                <h3 class="text-warning mb-0">{% if najwieksza %}{{ najwieksza.dlugosc_ryby }} cm{% else %}-{% endif %}</h3>
+                <small class="text-muted">REKORD</small>
+            </div>
+            <div class="text-center">
+                <h3 class="text-success mb-0">{{ wedkarz.date_joined|date:"Y" }}</h3>
+                <small class="text-muted">DOŁĄCZYŁ</small>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="text-info mb-4">Galeria trofeów</h3>
+    <div class="row">
+        {% for ryba in ryby %}
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark border-secondary h-100 shadow-sm">
+                    {% if ryba.zdjecie_ryby %}
+                        <img src="{{ ryba.zdjecie_ryby.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title text-info">{{ ryba.gatunek_ryby }}</h5>
+                        <p class="card-text text-muted small">
+                            <i class="fas fa-calendar-alt"></i> {{ ryba.data_polowu|date:"d.m.Y" }}<br>
+                            <i class="fas fa-map-marker-alt"></i> {{ ryba.lowisko.nazwa }}
+                        </p>
+                    </div>
+                    <div class="card-footer border-secondary text-center">
+                        <span class="badge bg-secondary">{{ ryba.waga_ryby }} kg</span>
+                        <span class="badge bg-secondary">{{ ryba.dlugosc_ryby }} cm</span>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center text-muted">Ten użytkownik nie dodał jeszcze żadnych ryb.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

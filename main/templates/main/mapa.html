@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-info mb-4 text-center">🗺️ Mapa naszych łowisk</h2>
+    <div id="map" style="height: 600px; border-radius: 15px; border: 2px solid #0dcaf0;"></div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // Inicjalizacja mapy na środku Polski
+    var map = L.map('map').setView([52.23, 21.01], 6);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Dynamiczne dodawanie punktów z bazy danych Django
+    {% for l in lowiska %}
+        L.marker([{{ l.lat|stringformat:"f" }}, {{ l.lon|stringformat:"f" }}])
+            .addTo(map)
+            .bindPopup("<b>{{ l.nazwa }}</b><br>Kraina wielkiej ryby!");
+    {% endfor %}
+</script>
+{% endblock %}

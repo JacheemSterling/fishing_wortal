@@ -1,29 +1,93 @@
-<!DOCTYPE html>
-<html lang="pl">
-{%load static %}
-<head>
-    <meta charset="UTF-8">
-    <title>Wędkarski Portal</title>
-    <link rel="stylesheet" href="{% static 'main/style.css' %}">
-</head>
-<body>
-    <h1>🎣 Witaj na Wędkarskim Portalu!</h1>
+{% extends 'main/base.html' %}
 
-<nav>
-    {% if user.is_authenticated %}
-        <p>Witaj, <strong>{{ user.username }}</strong>!</p>
-        <a href="{% url 'profil' %}" class="btn">Mój Profil</a>
-        <a href="{% url 'logout' %}">Wyloguj się</a>
-    {% else %}
-        <a href="{% url 'login' %}">Zaloguj się</a>
-        <a href="{% url 'register' %}">Zarejestruj się</a>
-    {% endif %}
-</nav>
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-5 text-info fw-bold">Witaj w Twoim Dzienniku, {{ user.username }}!</h1>
+            <p class="text-muted">Twoje aktualne statystyki połowów.</p>
+        </div>
+    </div>
 
-<p>To Twoja pierwsza strona w Django.</p>
+    <div class="row text-center mb-5">
+        <div class="col-md-6 mb-3">
+            <div class="card bg-dark border-info shadow h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Liczba ryb</h5>
+                    <p class="card-text display-4 text-info">{{ liczba_ryb }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card bg-dark border-info shadow h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Łączna waga</h5>
+                    <p class="card-text display-4 text-info">{{ laczna_waga|floatformat:2 }} kg</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <button id="test-btn">Kliknij mnie</button>
+    <hr class="border-secondary my-5">
 
-    <script src="{% static 'main/script.js' %}"></script>
-</body>
-</html>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card bg-dark border-0 shadow p-4">
+                <h3 class="text-info mb-4 text-center">Podział gatunkowy</h3>
+                
+                <canvas id="fishingChart"></canvas>
+                
+                {% if not dane_wykresu %}
+                    <p class="text-center text-muted mt-3">Dodaj więcej ryb, aby zobaczyć wykres!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('fishingChart').getContext('2d');
+        
+        // Przygotowanie danych z Django do JavaScript
+        const labels = [{% for item in dane_wykresu %}"{{ item.gatunek_ryby }}",{% endfor %}];
+        const counts = [{% for item in dane_wykresu %}{{ item.total }},{% endfor %}];
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Liczba sztuk',
+                    data: counts,
+                    backgroundColor: [
+                        '#0dcaf0', // Jasny niebieski
+                        '#007bff', // Niebieski
+                        '#6610f2', // Indygo
+                        '#20c997', // Morska zieleń
+                        '#ffc107'  // Żółty (dla odmiany)
+                    ],
+                    borderColor: '#1a1a1a', // Ciemna krawędź pasująca do tła
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#ffffff', // Białe napisy legendy
+                            padding: 20,
+                            font: { size: 14 }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-info mb-4 text-center"><i class="fas fa-stream"></i> Tablica Społeczności</h2>
+            
+            {% for polow in polowy %}
+                <div class="card bg-dark border-secondary shadow-lg mb-4">
+                    <div class="card-header border-secondary d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-info p-2 me-2">
+                                <i class="fas fa-user text-dark"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">
+                                     <a href="{% url 'profil_publiczny' polow.uzytkownik.username %}" class="text-info text-decoration-none">
+                                        {{ polow.uzytkownik.username }}
+                                    </a>
+                                </h6>
+                                <small class="text-muted small">{{ polow.data_polowu|date:"d.m.Y" }}</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-secondary">{{ polow.gatunek_ryby }}</span>
+                    </div>
+
+                    {% if polow.zdjecie_ryby %}
+                        <img src="{{ polow.zdjecie_ryby.url }}" class="card-img-top" style="max-height: 400px; object-fit: cover;">
+                    {% endif %}
+
+                    <div class="card-body text-white">
+                        <p class="card-text">
+                            Złowiłem: <strong>{{ polow.gatunek_ryby }}</strong> na łowisku <strong>{{ polow.lowisko.nazwa }}</strong>.
+                        </p>
+                        <div class="d-flex justify-content-around bg-secondary bg-opacity-10 p-2 rounded">
+                            <span><i class="fas fa-weight-hanging text-info"></i> {{ polow.waga_ryby }} kg</span>
+                            <span><i class="fas fa-ruler-horizontal text-info"></i> {{ polow.dlugosc_ryby }} cm</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer border-secondary d-flex justify-content-start">
+    
+                        <a href="{% url 'polub_polow' polow.pk %}" 
+                            class="btn btn-sm {% if polow.czy_polubione_przez %}btn-info text-dark{% else %}btn-outline-info{% endif %} me-2">
+                            <i class="{% if polow.czy_polubione_przez %}fas{% else %}far{% endif %} fa-thumbs-up"></i> 
+                            Gratulacje ({{ polow.likes.all.count }})
+                        </a>
+    
+                        <button class="btn btn-sm btn-outline-secondary"><i class="far fa-comment"></i> Skomentuj</button>
+                    </div>
+            {% empty %}
+                <div class="alert alert-info text-center">Nikt jeszcze nic nie złowił. Bądź pierwszy!</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
