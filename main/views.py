@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Polow, Lowisko, Like
@@ -81,8 +82,24 @@ def lista_polowow(request):
     return render(request, 'main/lista_polowow.html', {'polowy': polowy})
 
 def mapa_lowisk(request):
-    lowiska = Lowisko.objects.all()
-    return render(request, 'main/mapa.html', {'lowiska': lowiska})
+    lowiska_qs = Lowisko.objects.all()
+    lowiska_data = []
+    for l in lowiska_qs:
+        lowiska_data.append({
+            'id': l.id,
+            'nazwa': l.nazwa,
+            'miejscowosc': l.miejscowosc,
+            'lat': l.lat,
+            'lon': l.lon,   
+        })
+    lowiska_json = json.dumps(lowiska_data)
+
+    return render(request, 'main/mapa.html', {         
+    'lowiska_json': lowiska_json,
+    'lowiska_list': lowiska_qs
+    })
+
+
 
 @login_required
 def polub_polow(request, pk):

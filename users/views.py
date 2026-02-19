@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from main.models import Polow
+from main.models import Polow, Komentarz
 from .forms import EdycjaProfiluForm
+from main.forms import KomentarzForm
 
 def register(request):
     if request.method == 'POST':
@@ -63,9 +64,22 @@ def edytuj_profil(request):
 @login_required
 def feed(request):
     wszystkie_polowy = Polow.objects.all().order_by('-data_polowu')
+    
+    if request.method == 'POST':
+        form = KomentarzForm(request.POST)
+        if form.is_valid():
+            nowy_komentarz = form.save(commit=False)
+            nowy_komentarz.autor = request.user
+            # Pobieramy ID ryby, pod którą dodano komentarz
+            polow_id = request.POST.get('polow_id')
+            nowy_komentarz.polow = Polow.objects.get(id=polow_id)
+            nowy_komentarz.save()
+            return redirect('feed') # Przekieruj z powrotem na tablicę
+    else:
+        form = KomentarzForm()
 
     context = {
         'polowy': wszystkie_polowy,
+        'form': form,
     }
     return render(request, 'main/feed.html', context)
-    

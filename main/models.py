@@ -43,6 +43,10 @@ class Komentarz(models.Model):
     class Meta: 
         verbose_name = "Komentarz"
         verbose_name_plural = "Komentarze"
+        ordering = ['-data_dodania']
+
+    def __str__(self):
+        return f"{self.autor.username} pod {self.polow.gatunek_ryby}"
 
 class Like(models.Model):
     uzytkownik = models.ForeignKey(User, on_delete=models.CASCADE)

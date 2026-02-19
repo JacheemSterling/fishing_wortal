@@ -2,26 +2,72 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="text-info mb-4 text-center">🗺️ Mapa naszych łowisk</h2>
-    <div id="map" style="height: 600px; border-radius: 15px; border: 2px solid #0dcaf0;"></div>
+    <h2 class="text-info mb-4"><i class="fas fa-map-marked-alt text-primary"></i> Mapa Łowisk w Twojej Okolicy</h2>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { 
+            height: 550px; 
+            width: 100%; 
+            border-radius: 15px; 
+            border: 2px solid #17a2b8; 
+            z-index: 1;
+        }
+        .table-dark { background-color: #1a1a1a; }
+    </style>
+
+    <div id="map" class="shadow-lg mb-5"></div>
+
+    <div class="card bg-dark border-secondary shadow">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+            <span class="text-info fw-bold">Dostępne zbiorniki wodne</span>
+            <span class="badge bg-info text-dark">{{ lowiska_list.count }} łowisk</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Nazwa łowiska</th>
+                        <th>Miejscowość</th>
+                        <th>Współrzędne (Lat, Lon)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in lowiska_list %}
+                    <tr>
+                        <td class="text-info fw-bold">{{ l.nazwa }}</td>
+                        <td>{{ l.miejscowosc }}</td>
+                        <td class="text-light small fw-bold">{{ l.lat|floatformat:4 }}, {{ l.lon|floatformat:4 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">Brak łowisk w bazie danych.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
-    // Inicjalizacja mapy na środku Polski
-    var map = L.map('map').setView([52.23, 21.01], 6);
+    // 1. Inicjalizacja mapy - ustawiamy widok na okolice Redy (54.6, 18.3)
+    var map = L.map('map').setView([54.6, 18.3], 10);
 
+    // 2. Dodanie warstwy graficznej mapy
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Dynamiczne dodawanie punktów z bazy danych Django
-    {% for l in lowiska %}
-        L.marker([{{ l.lat|stringformat:"f" }}, {{ l.lon|stringformat:"f" }}])
+    // 3. Pobranie danych z Django
+    var lowiska = {{ lowiska_json|safe }};
+
+    // 4. Prosta pętla dodająca pinezki bez zbędnych funkcji "latania"
+    lowiska.forEach(function(l) {
+        L.marker([l.lat, l.lon])
             .addTo(map)
-            .bindPopup("<b>{{ l.nazwa }}</b><br>Kraina wielkiej ryby!");
-    {% endfor %}
+            .bindPopup("<div class='text-dark'><b>" + l.nazwa + "</b><br>" + l.miejscowosc + "</div>");
+    });
 </script>
 {% endblock %}

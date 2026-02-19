@@ -4,53 +4,74 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2 class="text-info mb-4 text-center"><i class="fas fa-stream"></i> Tablica Społeczności</h2>
-            
+            <h2 class="text-info mb-4 text-center"><i class="fas fa-fish me-2"></i>Tablica Połowów</h2>
+
             {% for polow in polowy %}
-                <div class="card bg-dark border-secondary shadow-lg mb-4">
-                    <div class="card-header border-secondary d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-info p-2 me-2">
-                                <i class="fas fa-user text-dark"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">
-                                     <a href="{% url 'profil_publiczny' polow.uzytkownik.username %}" class="text-info text-decoration-none">
-                                        {{ polow.uzytkownik.username }}
-                                    </a>
-                                </h6>
-                                <small class="text-muted small">{{ polow.data_polowu|date:"d.m.Y" }}</small>
-                            </div>
-                        </div>
-                        <span class="badge bg-secondary">{{ polow.gatunek_ryby }}</span>
+                <div class="card bg-dark border-info mb-5 shadow-lg">
+                    
+                    <div class="card-header border-info d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="fas fa-user-circle text-info me-2"></i>
+                            <a href="{% url 'profil_publiczny' polow.uzytkownik.username %}" class="text-info text-decoration-none fw-bold">
+                                {{ polow.uzytkownik.username }}
+                            </a>
+                        </h6>
+                        <small class="text-muted">{{ polow.data_polowu|date:"d.m.Y" }}</small>
                     </div>
 
                     {% if polow.zdjecie_ryby %}
-                        <img src="{{ polow.zdjecie_ryby.url }}" class="card-img-top" style="max-height: 400px; object-fit: cover;">
+                        <img src="{{ polow.zdjecie_ryby.url }}" class="card-img-top border-bottom border-secondary" alt="{{ polow.gatunek_ryby }}" style="max-height: 500px; object-fit: cover;">
                     {% endif %}
 
                     <div class="card-body text-white">
-                        <p class="card-text">
-                            Złowiłem: <strong>{{ polow.gatunek_ryby }}</strong> na łowisku <strong>{{ polow.lowisko.nazwa }}</strong>.
-                        </p>
-                        <div class="d-flex justify-content-around bg-secondary bg-opacity-10 p-2 rounded">
-                            <span><i class="fas fa-weight-hanging text-info"></i> {{ polow.waga_ryby }} kg</span>
-                            <span><i class="fas fa-ruler-horizontal text-info"></i> {{ polow.dlugosc_ryby }} cm</span>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h4 class="card-title text-info mb-0">{{ polow.gatunek_ryby }}</h4>
+                            <span class="badge bg-info text-dark">{{ polow.dlugosc_ryby }} cm</span>
                         </div>
+                        <p class="card-text">{{ polow.opis_polowu }}</p>
+                        <hr class="border-secondary">
+                        <p class="small mb-0"><i class="fas fa-map-marker-alt text-danger me-2"></i><strong>Łowisko:</strong> {{ polow.lowisko.nazwa }} ({{ polow.lowisko.miejscowosc }})</p>
                     </div>
 
-                    <div class="card-footer border-secondary d-flex justify-content-start">
-    
-                        <a href="{% url 'polub_polow' polow.pk %}" 
-                            class="btn btn-sm {% if polow.czy_polubione_przez %}btn-info text-dark{% else %}btn-outline-info{% endif %} me-2">
-                            <i class="{% if polow.czy_polubione_przez %}fas{% else %}far{% endif %} fa-thumbs-up"></i> 
-                            Gratulacje ({{ polow.likes.all.count }})
-                        </a>
-    
-                        <button class="btn btn-sm btn-outline-secondary"><i class="far fa-comment"></i> Skomentuj</button>
+                    <div class="card-footer bg-dark border-top border-secondary pt-3">
+                        <h6 class="text-info small fw-bold mb-3">
+                            <i class="fas fa-comments me-1"></i> Komentarze ({{ polow.komentarze.count }})
+                        </h6>
+                        
+                        <div class="komentarze-lista mb-3" style="max-height: 250px; overflow-y: auto;">
+                            {% for kom in polow.komentarze.all %}
+                                <div class="mb-2 border-bottom border-secondary pb-2 px-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-info small fw-bold">{{ kom.uzytkownik.username }}</span>
+                                        <small class="text-muted" style="font-size: 0.7rem;">{{ kom.data_dodania|date:"H:i d.m.Y" }}</small>
+                                    </div>
+                                    <p class="text-white small mb-0">{{ kom.tresc }}</p>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted small italic px-2">Brak komentarzy. Napisz coś pierwszy!</p>
+                            {% endfor %}
+                        </div>
+
+                        {% if user.is_authenticated %}
+                            <form method="post" class="mt-2 px-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="polow_id" value="{{ polow.id }}">
+                                <div class="input-group input-group-sm">
+                                    {{ form.tresc }}
+                                    <button class="btn btn-info fw-bold" type="submit">Dodaj</button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="text-center py-2">
+                                <small class="text-muted">Aby dodać komentarz, <a href="{% url 'login' %}" class="text-info">zaloguj się</a>.</small>
+                            </div>
+                        {% endif %}
                     </div>
+                </div>
             {% empty %}
-                <div class="alert alert-info text-center">Nikt jeszcze nic nie złowił. Bądź pierwszy!</div>
+                <div class="alert alert-dark text-center border-info">
+                    <p class="mb-0 text-white">Na tablicy nie ma jeszcze żadnych ryb. Bądź pierwszy i dodaj swój połów!</p>
+                </div>
             {% endfor %}
         </div>
     </div>
