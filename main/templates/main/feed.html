@@ -41,11 +41,26 @@
                         <div class="komentarze-lista mb-3" style="max-height: 250px; overflow-y: auto;">
                             {% for kom in polow.komentarze.all %}
                                 <div class="mb-2 border-bottom border-secondary pb-2 px-2">
-                                    <div class="d-flex justify-content-between">
-                                        <span class="text-info small fw-bold">{{ kom.uzytkownik.username }}</span>
-                                        <small class="text-muted" style="font-size: 0.7rem;">{{ kom.data_dodania|date:"H:i d.m.Y" }}</small>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <a href="{% url 'profil_publiczny' kom.autor.username %}" class="text-info small fw-bold text-decoration-none">
+                                             <i class="fas fa-user-circle me-1"></i>{{ kom.autor.username }}
+                                        </a>
+    
+                                        <div class="d-flex align-items-center">
+                                            <small class="text-light me-2" style="font-size: 0.75rem; opacity: 0.9;">
+                                                {{ kom.data_dodania|date:"H:i d.m.Y" }}
+                                            </small>
+        
+                                            {% if kom.autor.username == user.username %}
+                                                <a href="{% url 'usun_komentarz' kom.pk %}" class="text-danger ms-2" 
+                                                   onclick="return confirm('Czy na pewno chcesz usunąć ten komentarz?')" 
+                                                   title="Usuń komentarz" style="text-decoration: none;">
+                                                    <i class="fas fa-trash-alt" style="font-size: 0.85rem;"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
                                     </div>
-                                    <p class="text-white small mb-0">{{ kom.tresc }}</p>
+                                    <p class="text-white small mb-0" style="word-wrap: break-word;">{{ kom.tresc }}</p>
                                 </div>
                             {% empty %}
                                 <p class="text-muted small italic px-2">Brak komentarzy. Napisz coś pierwszy!</p>

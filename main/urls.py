@@ -12,4 +12,5 @@ urlpatterns = [
     path('polub-polow/<int:pk>/', views.polub_polow, name='polub_polow'),
     path('profil/edytuj/', users_views.edytuj_profil, name='edytuj_profil'),
     path('profil/<str:username>/', views.profil_publiczny, name='profil_publiczny'),
+    path('komentarz/usun/<int:pk>/', users_views.usun_komentarz, name='usun_komentarz'),
 ]

@@ -10,19 +10,53 @@
         </div>
         <div class="col-md-8 d-flex align-items-center justify-content-around">
             <div class="text-center">
-                <h3 class="text-info mb-0">{{ liczba_ryb }}</h3>
-                <small class="text-muted">POŁOWÓW</small>
+                <h3 class="text-info mb-0 fw-bold">{{ liczba_ryb }}</h3>
+                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8; letter-spacing: 1px;">Połowów</small>
             </div>
             <div class="text-center">
-                <h3 class="text-warning mb-0">{% if najwieksza %}{{ najwieksza.dlugosc_ryby }} cm{% else %}-{% endif %}</h3>
-                <small class="text-muted">REKORD</small>
+                <h3 class="text-warning mb-0 fw-bold">{% if najwieksza %}{{ najwieksza.dlugosc_ryby }} cm{% else %}-{% endif %}</h3>
+                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8; letter-spacing: 1px;">Rekord</small>
             </div>
             <div class="text-center">
-                <h3 class="text-success mb-0">{{ wedkarz.date_joined|date:"Y" }}</h3>
-                <small class="text-muted">DOŁĄCZYŁ</small>
+                <h3 class="text-success mb-0 fw-bold">{{ wedkarz.date_joined|date:"Y" }}</h3>
+                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8; letter-spacing: 1px;">Dołączył</small>
             </div>
         </div>
     </div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark border-info shadow">
+            <div class="card-body text-white">
+                <h5 class="text-info border-bottom border-secondary pb-2">
+                    <i class="fas fa-info-circle me-2"></i>Wędkarska wizytówka
+                </h5>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                    <p class="mb-1 text-light small fw-bold text-uppercase" style="opacity: 0.7;">O mnie:</p>
+                    <p class="text-light">
+                        {% if wedkarz.profil.bio %}
+                            {{ wedkarz.profil.bio }}
+                        {% else %}
+                            <span class="text-light opacity-50 italic">Ten wędkarz jeszcze nic o sobie nie napisał.</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-6 border-start border-secondary">
+                    <p class="mb-1 text-light small fw-bold text-uppercase" style="opacity: 0.7;">Ulubiona metoda:</p>
+                        <p class="text-info fw-bold">
+                            {% if wedkarz.profil.ulubiona_metoda %}
+                                <i class="fas fa-fish me-1"></i>{{ wedkarz.profil.ulubiona_metoda }}
+                            {% else %}
+                                <span class="text-light opacity-50">Nieokreślona</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <h3 class="text-info mb-4">Galeria trofeów</h3>
     <div class="row">
@@ -33,10 +67,14 @@
                         <img src="{{ ryba.zdjecie_ryby.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     {% endif %}
                     <div class="card-body">
-                        <h5 class="card-title text-info">{{ ryba.gatunek_ryby }}</h5>
-                        <p class="card-text text-muted small">
-                            <i class="fas fa-calendar-alt"></i> {{ ryba.data_polowu|date:"d.m.Y" }}<br>
-                            <i class="fas fa-map-marker-alt"></i> {{ ryba.lowisko.nazwa }}
+                        <h5 class="card-title text-info fw-bold">{{ ryba.gatunek_ryby }}</h5>
+                        <p class="card-text text-light small mb-0">
+                            <i class="fas fa-calendar-alt text-info me-1" style="opacity: 0.8;"></i> 
+                            {{ ryba.data_polowu|date:"d.m.Y" }}
+                        </p>
+                        <p class="card-text text-light small">
+                            <i class="fas fa-map-marker-alt text-danger me-1" style="opacity: 0.8;"></i> 
+                            {{ ryba.lowisko.nazwa }}
                         </p>
                     </div>
                     <div class="card-footer border-secondary text-center">

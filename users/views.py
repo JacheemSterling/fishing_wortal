@@ -83,3 +83,13 @@ def feed(request):
         'form': form,
     }
     return render(request, 'main/feed.html', context)
+
+@login_required
+def usun_komentarz(request, pk):
+    komentarz = get_object_or_404(Komentarz, pk=pk)
+    if komentarz.autor == request.user:
+        komentarz.delete()
+        messages.success(request, "Komentarz został usunięty.")
+    else:
+        messages.error(request, "Nie masz uprawnień do usunięcia tego komentarza.")
+    return redirect('feed')
