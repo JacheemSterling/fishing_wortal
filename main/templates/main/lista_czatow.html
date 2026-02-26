@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h2 class="text-info mb-4"><i class="fas fa-envelope me-2"></i>Twoje Wiadomości</h2>
+            
+            <div class="list-group shadow">
+                {% for r in rozmowcy %}
+                    <a href="{% url 'okno_czatu' r.username %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary mb-2 rounded d-flex align-items-center p-3">
+                        {% if r.profil.avatar %}
+                            <img src="{{ r.profil.avatar.url }}" class="rounded-circle me-3 border border-info" style="width: 50px; height: 50px; object-fit: cover;">
+                        {% else %}
+                            <i class="fas fa-user-circle text-info fs-1 me-3"></i>
+                        {% endif %}
+                        <div class="text-start">
+                            <h5 class="mb-0">{{ r.username }}</h5>
+                            <small class="text-info">Kliknij, aby otworzyć czat</small>
+                        </div>
+                    </a>
+                {% empty %}
+                    <div class="alert alert-dark border-info text-white py-5">
+                        <p class="mb-0">Nie masz jeszcze żadnych rozmów.</p>
+                        <a href="{% url 'szukaj_wedkarzy' %}" class="btn btn-info mt-3 btn-sm">Znajdź wędkarzy</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

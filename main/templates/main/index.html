@@ -5,7 +5,7 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="display-5 text-info fw-bold">Witaj w Twoim Dzienniku, {{ user.username }}!</h1>
-            <p class="text-muted">Twoje aktualne statystyki połowów.</p>
+            <p class="text-light opacity-50">Twoje aktualne statystyki połowów.</p>
         </div>
     </div>
 
@@ -13,7 +13,7 @@
         <div class="col-md-6 mb-3">
             <div class="card bg-dark border-info shadow h-100">
                 <div class="card-body">
-                    <h5 class="card-title text-muted">Liczba ryb</h5>
+                    <h5 class="card-title text-light opacity-50">Liczba ryb</h5>
                     <p class="card-text display-4 text-info">{{ liczba_ryb }}</p>
                 </div>
             </div>
@@ -21,7 +21,7 @@
         <div class="col-md-6 mb-3">
             <div class="card bg-dark border-info shadow h-100">
                 <div class="card-body">
-                    <h5 class="card-title text-muted">Łączna waga</h5>
+                    <h5 class="card-title text-light opacity-50">Łączna waga</h5>
                     <p class="card-text display-4 text-info">{{ laczna_waga|floatformat:2 }} kg</p>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                 <canvas id="fishingChart"></canvas>
                 
                 {% if not dane_wykresu %}
-                    <p class="text-center text-muted mt-3">Dodaj więcej ryb, aby zobaczyć wykres!</p>
+                    <p class="text-center text-light opacity-50 ">Dodaj więcej ryb, aby zobaczyć wykres!</p>
                 {% endif %}
             </div>
         </div>

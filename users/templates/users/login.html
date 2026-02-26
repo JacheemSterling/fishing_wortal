@@ -1,6 +1,41 @@
-<h2>Zaloguj się na portal</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Zaloguj się</button>
-</form>
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card bg-dark border-info shadow-lg mt-5">
+                <div class="card-body p-5 text-white">
+                    <div class="text-center mb-4">
+                        <h2 class="text-info fw-bold"><i class="fas fa-sign-in-alt me-2"></i>Witaj ponownie</h2>
+                        <p class="text-light opacity-75">Zaloguj się, aby sprawdzić brania</p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-info">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <button type="submit" class="btn btn-info w-100 fw-bold py-2 mt-3 shadow-sm">
+                            Zaloguj się
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="small opacity-75">Nie masz jeszcze konta? 
+                            <a href="{% url 'register' %}" class="text-info text-decoration-none fw-bold">Dołącz do nas!</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -19,7 +19,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container-fluid"></div>
-        <a class="navbar-brand fw-bold" href="{%url 'index' %}">🎣 FISHING PORTAL</a>
+        <a class="navbar-brand fw-bold" href="{%url 'index' %}">🎣 FISHNET.PL</a>
         <div class="navbar-nav ms_auto">
             {% if user.is_authenticated %}
                 <span class="nav-link text-info">Witaj, {{ user.username }}!</span>
@@ -45,12 +45,37 @@
             <h5 class="mb-4">Menu</h5>
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">🏠 Strona główna</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'profil' %}">👤 Mój profil</a></li>
-                <li class="'nav-item"><a class="nav-link" href="{% url 'feed' %}">Tablica</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">📍 Łowiska</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">💬 Forum</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">🏆 Zawody</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">📚 Baza wiedzy</a></li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'profil_publiczny' user.username %}">
+                        <i class="fas fa-user-circle me-1"></i> Mój profil
+                        {% if n_obserwujacy > 0 %}
+                            <span class="badge rounded-pill bg-warning text-dark ms-1">
+                                +{{ n_obserwujacy }}
+                            </span>
+                        {% endif %}
+                    </a>
+                </li>
+                {% endif %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'lista_czatow' %}">📩 Wiadomości
+                {% if nieprzeczytane_count > 0 %}
+                    <span class="badge rounded-pill bg-info text-dark ms-1">
+                        {{ nieprzeczytane_count }}
+                    </span>
+                {% endif %}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-normal" href="{% url 'szukaj_wedkarzy' %}" style="color: rgba(255, 255, 255, 0.75);">
+                        <i class="fas fa-search me-1"></i> Szukaj wędkarzy
+                    </a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'feed' %}">⬛ Tablica</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mapa_lowisk' %}">
+                        <i class="fas fa-map-marked-alt me-1"></i> Łowiska
+                    </a>
+                </li>
             </ul>
         </div>
 

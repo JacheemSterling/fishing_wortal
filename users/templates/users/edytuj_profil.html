@@ -2,37 +2,31 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="card bg-dark border-info shadow-lg mx-auto" style="max-width: 500px;">
-        <div class="card-header border-info text-center py-3">
-            <h3 class="text-info mb-0"><i class="fas fa-user-edit me-2"></i>Edytuj swoje dane</h3>
-        </div>
-        <div class="card-body text-white">
-            <form method="post" novalidate>
-                {% csrf_token %}
-                
-                <div class="mb-3">
-                    <label class="form-label text-info small fw-bold">IMIĘ</label>
-                    {{ form.first_name }}
-                    {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors }}</div>{% endif %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card bg-dark border-info shadow-lg">
+                <div class="card-header border-info">
+                    <h3 class="text-info mb-0"><i class="fas fa-user-edit me-2"></i>Edytuj swój profil</h3>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label text-info small fw-bold">NAZWISKO</label>
-                    {{ form.last_name }}
-                    {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors }}</div>{% endif %}
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="text-light fw-bold small text-uppercase">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <small class="text-light opacity-50 d-block">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-info fw-bold">Zapisz zmiany</button>
+                            <a href="{% url 'profil_publiczny' user.username %}" class="btn btn-outline-secondary btn-sm text-light">Anuluj</a>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="mb-4">
-                    <label class="form-label text-info small fw-bold">ADRES E-MAIL</label>
-                    {{ form.email }}
-                    {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
-                </div>
-
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-info fw-bold">Zapisz zmiany</button>
-                    <a href="{% url 'profil' %}" class="btn btn-outline-secondary btn-sm">Anuluj</a>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

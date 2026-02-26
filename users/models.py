@@ -4,13 +4,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Profil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
-    # Zmieniamy na 'opis' lub zostajemy przy 'bio' - ważne, by w szablonie użyć tej samej nazwy
+    obserwuje = models.ManyToManyField('self', related_name="obserwujacy", symmetrical=False, blank=True)
     bio = models.TextField(blank=True, verbose_name="O mnie / Osiągnięcia")
-    
-    # Dodajemy pole 'ulubiona_metoda', o którym wspominaliśmy w projekcie wizytówki
     ulubiona_metoda = models.CharField(max_length=100, blank=True, verbose_name="Ulubiona metoda")
-    
     miejscowosc = models.CharField(max_length=100, blank=True, verbose_name="Miejscowość")
     wiek = models.IntegerField(
         null=True, 

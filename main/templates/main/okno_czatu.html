@@ -1,0 +1,65 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-dark border-info shadow-lg mb-3">
+                <div class="card-header border-info d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'profil_publiczny' rozmowca.username %}" class="text-decoration-none">
+                            {% if rozmowca.profil.avatar %}
+                                <img src="{{ rozmowca.profil.avatar.url }}" class="rounded-circle me-2 border border-info" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                                <i class="fas fa-user-circle text-info fs-3 me-2"></i>
+                            {% endif %}
+                        </a>
+                        <h5 class="text-white mb-0">Rozmowa z: <span class="text-info">{{ rozmowca.username }}</span></h5>
+                    </div>
+                    <a href="{% url 'lista_czatow' %}" class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-arrow-left"></i> Wróć
+                    </a>
+                </div>
+
+                <div class="card-body p-4" id="chat-window" style="height: 500px; overflow-y: auto; background-color: #0b0f14;">
+                    {% for msg in wiadomosci %}
+                        <div class="d-flex mb-3 {% if msg.nadawca == user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                            <div class="p-3 shadow-sm" style="max-width: 75%; border-radius: 15px; 
+                                {% if msg.nadawca == user %}
+                                    background-color: #0dcaf0; color: #000; border-bottom-right-radius: 2px;
+                                {% else %}
+                                    background-color: #212529; color: #fff; border: 1px solid #334155; border-bottom-left-radius: 2px;
+                                {% endif %}">
+                                <p class="mb-1" style="word-wrap: break-word;">{{ msg.tresc }}</p>
+                                <small class="opacity-75" style="font-size: 0.7rem;">{{ msg.data_wyslania|date:"H:i" }}</small>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center text-light opacity-50 mt-5">
+                            <i class="fas fa-comments fs-1 mb-3"></i>
+                            <p>Brak wiadomości. Przywitaj się z kolegą po kiju!</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="card-footer border-info bg-dark p-3">
+                    <form method="post" class="d-flex gap-2">
+                        {% csrf_token %}
+                        <input type="text" name="tresc" class="form-control bg-dark text-white border-secondary" 
+                               placeholder="Napisz wiadomość..." required autocomplete="off">
+                        <button type="submit" class="btn btn-info px-4 fw-bold">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Automatyczne przewijanie na dół przy załadowaniu strony
+    var chatWindow = document.getElementById("chat-window");
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+</script>
+{% endblock %}

@@ -6,9 +6,28 @@
         <div class="col-md-8">
             <h2 class="text-info mb-4 text-center"><i class="fas fa-fish me-2"></i>Tablica Połowów</h2>
 
+            <div class="d-flex justify-content-center mb-4">
+                <div class="btn-group shadow-sm">
+                    <a href="{% url 'feed' %}" 
+                        class="btn {% if not filtr %}btn-info{% else %}btn-outline-info{% endif %} fw-bold px-4">
+                        <i class="fas fa-globe me-1"></i> Wszystkie
+                    </a>
+                    <a href="{% url 'feed' %}?filter=following" 
+                        class="btn {% if filtr == 'following' %}btn-info{% else %}btn-outline-info{% endif %} fw-bold px-4">
+                        <i class="fas fa-user-friends me-1"></i> Obserwowani
+                     </a>
+                </div>
+            </div>
+
+            <div class="text-center mb-5">
+                <a href="{% url 'dodaj_polow' %}" class="btn btn-info btn-lg fw-bold shadow">
+                    <i class="fas fa-plus-circle me-2"></i> Dodaj nowy połów
+                </a>
+            </div>
+
             {% for polow in polowy %}
-                <div class="card bg-dark border-info mb-5 shadow-lg">
-                    
+                <div class="card bg-dark border-info mb-5 shadow-lg" style="text-align: left !important;">
+    
                     <div class="card-header border-info d-flex justify-content-between align-items-center">
                         <h6 class="mb-0">
                             <i class="fas fa-user-circle text-info me-2"></i>
@@ -16,24 +35,54 @@
                                 {{ polow.uzytkownik.username }}
                             </a>
                         </h6>
-                        <small class="text-muted">{{ polow.data_polowu|date:"d.m.Y" }}</small>
+                        <small class="text-light opacity-75">{{ polow.data_polowu|date:"d.m.Y" }}</small>
                     </div>
 
-                    {% if polow.zdjecie_ryby %}
-                        <img src="{{ polow.zdjecie_ryby.url }}" class="card-img-top border-bottom border-secondary" alt="{{ polow.gatunek_ryby }}" style="max-height: 500px; object-fit: cover;">
+                    {% if polow.opis %}
+                        <div class="card-body py-3 border-bottom border-secondary bg-dark" style="text-align: left !important;">
+                            <div style="display: flex; justify-content: flex-start; width: 100%;">
+                                <p class="card-text text-light mb-0" style="white-space: pre-wrap; font-size: 1.05rem; opacity: 0.95; text-align: left !important; margin-left: 0 !important;">
+                                    {{ polow.opis }}
+                                </p>
+                            </div>
+                        </div>
                     {% endif %}
 
-                    <div class="card-body text-white">
+                    {% if polow.zdjecie_ryby %}
+                        <img src="{{ polow.zdjecie_ryby.url }}" class="card-img-top" alt="{{ polow.gatunek_ryby }}" style="max-height: 500px; object-fit: cover;">
+                    {% endif %}
+
+                    <div class="card-body text-white" style="text-align: left !important;">
+                        
+                        <div class="mb-3 d-flex align-items-center">
+                            <a href="{% url 'polub_polow' polow.id %}" class="text-decoration-none me-2">
+                                {% if user.is_authenticated %}
+                                    {% if polow.id in polubione_id %}
+                                        <i class="fas fa-heart text-danger fs-4 shadow-sm"></i>
+                                    {% else %}
+                                        <i class="far fa-heart text-light fs-4 opacity-75"></i>
+                                    {% endif %}
+                                {% else %}
+                                    <i class="far fa-heart text-light fs-4 opacity-50"></i>
+                                {% endif %}
+                            </a>
+                            <span class="fw-bold text-light">{{ polow.likes.count }}</span>
+                            <small class="text-light opacity-50 ms-2">osób polubiło ten połów</small>
+                        </div>
+
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h4 class="card-title text-info mb-0">{{ polow.gatunek_ryby }}</h4>
                             <span class="badge bg-info text-dark">{{ polow.dlugosc_ryby }} cm</span>
                         </div>
-                        <p class="card-text">{{ polow.opis_polowu }}</p>
+                        
                         <hr class="border-secondary">
-                        <p class="small mb-0"><i class="fas fa-map-marker-alt text-danger me-2"></i><strong>Łowisko:</strong> {{ polow.lowisko.nazwa }} ({{ polow.lowisko.miejscowosc }})</p>
+                        <p class="small mb-0 text-light">
+                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                            <strong>Łowisko:</strong> {{ polow.lowisko.nazwa }} ({{ polow.lowisko.miejscowosc }})
+                        </p>
                     </div>
 
-                    <div class="card-footer bg-dark border-top border-secondary pt-3">
+                    <div class="card-footer bg-dark border-top border-secondary pt-3" style="text-align: left !important;">
                         <h6 class="text-info small fw-bold mb-3">
                             <i class="fas fa-comments me-1"></i> Komentarze ({{ polow.komentarze.count }})
                         </h6>
@@ -54,8 +103,8 @@
                                             {% if kom.autor.username == user.username %}
                                                 <a href="{% url 'usun_komentarz' kom.pk %}" class="text-danger ms-2" 
                                                    onclick="return confirm('Czy na pewno chcesz usunąć ten komentarz?')" 
-                                                   title="Usuń komentarz" style="text-decoration: none;">
-                                                    <i class="fas fa-trash-alt" style="font-size: 0.85rem;"></i>
+                                                   style="text-decoration: none;">
+                                                     <i class="fas fa-trash-alt" style="font-size: 0.85rem;"></i>
                                                 </a>
                                             {% endif %}
                                         </div>
@@ -63,7 +112,7 @@
                                     <p class="text-white small mb-0" style="word-wrap: break-word;">{{ kom.tresc }}</p>
                                 </div>
                             {% empty %}
-                                <p class="text-muted small italic px-2">Brak komentarzy. Napisz coś pierwszy!</p>
+                                <p class="text-light opacity-50 small italic px-2">Brak komentarzy.</p>
                             {% endfor %}
                         </div>
 
@@ -76,16 +125,12 @@
                                     <button class="btn btn-info fw-bold" type="submit">Dodaj</button>
                                 </div>
                             </form>
-                        {% else %}
-                            <div class="text-center py-2">
-                                <small class="text-muted">Aby dodać komentarz, <a href="{% url 'login' %}" class="text-info">zaloguj się</a>.</small>
-                            </div>
                         {% endif %}
                     </div>
                 </div>
             {% empty %}
-                <div class="alert alert-dark text-center border-info">
-                    <p class="mb-0 text-white">Na tablicy nie ma jeszcze żadnych ryb. Bądź pierwszy i dodaj swój połów!</p>
+                <div class="alert alert-dark text-center border-info shadow">
+                    <p class="mb-0 text-white">Na tablicy nie ma jeszcze żadnych ryb.</p>
                 </div>
             {% endfor %}
         </div>

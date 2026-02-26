@@ -1,20 +1,20 @@
 import json
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Polow, Lowisko, Like
-from django.db.models import Sum, Count
+from .models import Polow, Lowisko, Like, Wiadomosc, Powiadomienie
+from django.db.models import Sum, Count, Q
 from django.contrib.auth.decorators import login_required
-from .forms import PolowForm, EdycjaProfiluForm
+from .forms import PolowForm
 
 def profil_publiczny(request, username):
-    # Szukamy konkretnego wędkarza po nazwie użytkownika
     wedkarz = get_object_or_404(User, username=username)
-    # Pobieramy wszystkie jego połowy, od najnowszych
     ryby_wedkarza = Polow.objects.filter(uzytkownik=wedkarz).order_by('-data_polowu')
-    
-    # Dodatkowe statystyki dla efektu "wow"
     liczba_ryb = ryby_wedkarza.count()
     najwieksza_ryba = ryby_wedkarza.order_by('-dlugosc_ryby').first()
+    wedkarz = get_object_or_404(User, username=username)
+
+    if request.user == wedkarz:
+        Powiadomienie.objects.filter(odbiorca=request.user, czy_przeczytane=False).update(czy_przeczytane=True)
 
     context = {
         'wedkarz': wedkarz,
@@ -99,8 +99,6 @@ def mapa_lowisk(request):
     'lowiska_list': lowiska_qs
     })
 
-
-
 @login_required
 def polub_polow(request, pk):
     polow = get_object_or_404(Polow, pk=pk)
@@ -110,4 +108,46 @@ def polub_polow(request, pk):
         polubienie.delete()
 
     return redirect('feed')
+
+@login_required
+def lista_czatow(request):
+    wiadomosci = Wiadomosc.objects.filter(Q(nadawca=request.user) | Q(odbiorca=request.user)).order_by('-data_wyslania')
+    rozmowcy_id = set()
+    for w in wiadomosci:
+        rozmowcy_id.add(w.nadawca.id if w.odbiorca == request.user else w.odbiorca.id)
+
+    rozmowcy = User.objects.filter(id__in=rozmowcy_id)
+    return render(request, 'main/lista_czatow.html', {'rozmowcy': rozmowcy})
+
+@login_required
+def okno_czatu(request, username):
+    rozmowca = get_object_or_404(User, username=username)
+    Wiadomosc.objects.filter(nadawca=rozmowca, odbiorca=request.user, czy_przeczytana=False).update(czy_przeczytana=True)
+    wiadomosci = Wiadomosc.objects.filter(
+        (Q(nadawca=request.user) & Q(odbiorca=rozmowca)) |
+        (Q(nadawca=rozmowca) & Q(odbiorca=request.user))
+        ).order_by('data_wyslania')
+    
+    if request.method == 'POST':
+        tresc = request.POST.get('tresc')
+        if tresc:
+            Wiadomosc.objects.create(nadawca=request.user, odbiorca=rozmowca, tresc=tresc)
+            return redirect('okno_czatu', username=username)
+        
+    return render(request, 'main/okno_czatu.html', {
+        'rozmowca': rozmowca,
+        'wiadomosci': wiadomosci,
+    })
+
+@login_required 
+def szukaj_wedkarzy(request):
+    query = request.GET.get('q')
+    wyniki = []
+    if query:
+        wyniki = User.objects.filter(Q(username__icontains=query)).exclude(id=request.user.id)
+    return render(request, 'main/szukaj_uzytkownikow.html', {
+        'wyniki': wyniki,
+        'query': query,
+    })
+
     

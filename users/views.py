@@ -4,8 +4,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from main.models import Polow, Komentarz
-from .forms import EdycjaProfiluForm
+from main.models import Polow, Komentarz, Like, Powiadomienie
+from .forms import ProfilForm
 from main.forms import KomentarzForm
 
 def register(request):
@@ -38,7 +38,6 @@ def login_view(request):
 @login_required
 def profil(request):
     from main.models import Polow 
-    # Pobieramy ryby zalogowanego użytkownika
     ryby = Polow.objects.filter(uzytkownik=request.user).order_by('-data_polowu')
     
     context = {
@@ -51,36 +50,51 @@ def profil(request):
 
 @login_required
 def edytuj_profil(request):
+    profil = request.user.profil
+
     if request.method == 'POST':
-        form = EdycjaProfiluForm(request.POST, instance=request.user) #
+        form = ProfilForm(request.POST, request.FILES, instance=profil) 
         if form.is_valid():
-            form.save() #
-            return redirect('profil') #
+            form.save() 
+            messages.success(request, "Twój profil został zaktualizowany!")
+            return redirect('profil_publiczny', username=request.user.username) 
     else:
-        form = EdycjaProfiluForm(instance=request.user) #
+        form = ProfilForm(instance=request.user) 
     
     return render(request, 'users/edytuj_profil.html', {'form': form}) #
 
 @login_required
 def feed(request):
     wszystkie_polowy = Polow.objects.all().order_by('-data_polowu')
+    filtr = request.GET.get('filter')
+
+    if filtr == 'following' and request.user.is_authenticated:
+        obserwowani_profile = request.user.profil.obserwuje.all()
+        obserwowani_uzytkownicy = [p.user for p in obserwowani_profile]
+        wszystkie_polowy = wszystkie_polowy.filter(uzytkownik__in=obserwowani_uzytkownicy)
+                               
+
+    polubione_id = []
+    if request.user.is_authenticated:
+        polubione_id = list(Like.objects.filter(uzytkownik=request.user).values_list('polow_id', flat=True))
     
     if request.method == 'POST':
         form = KomentarzForm(request.POST)
         if form.is_valid():
             nowy_komentarz = form.save(commit=False)
             nowy_komentarz.autor = request.user
-            # Pobieramy ID ryby, pod którą dodano komentarz
             polow_id = request.POST.get('polow_id')
             nowy_komentarz.polow = Polow.objects.get(id=polow_id)
             nowy_komentarz.save()
-            return redirect('feed') # Przekieruj z powrotem na tablicę
+            return redirect('feed')
     else:
         form = KomentarzForm()
 
     context = {
         'polowy': wszystkie_polowy,
+        'filtr': filtr,
         'form': form,
+        'polubione_id': polubione_id,
     }
     return render(request, 'main/feed.html', context)
 
@@ -93,3 +107,20 @@ def usun_komentarz(request, pk):
     else:
         messages.error(request, "Nie masz uprawnień do usunięcia tego komentarza.")
     return redirect('feed')
+
+@login_required
+def obserwuj_uzytkownika(request, username):
+    osoba_do_obserwowania = get_object_or_404(User, username=username)
+    moj_profil = request.user.profil
+    if osoba_do_obserwowania != request.user:
+        if moj_profil.obserwuje.filter(id=osoba_do_obserwowania.profil.id).exists():
+            moj_profil.obserwuje.remove(osoba_do_obserwowania.profil)
+        else:
+            moj_profil.obserwuje.add(osoba_do_obserwowania.profil)
+
+            Powiadomienie.objects.create(
+                odbiorca=osoba_do_obserwowania,
+                nadawca=request.user,
+                typ='obserwacja'
+            )
+    return redirect('profil_publiczny', username=username)

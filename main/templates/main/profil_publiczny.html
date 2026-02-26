@@ -4,61 +4,108 @@
 <div class="container mt-5">
     <div class="row mb-5 py-4 bg-dark border border-info rounded shadow">
         <div class="col-md-4 text-center border-end border-secondary">
-            <div class="display-1 text-info"><i class="fas fa-user-circle"></i></div>
-            <h2 class="text-white">{{ wedkarz.username }}</h2>
-            <span class="badge bg-info text-dark">Wędkarz</span>
+            {% if wedkarz.profil.avatar %}
+                <img src="{{ wedkarz.profil.avatar.url }}" class="rounded-circle border border-info mb-3 shadow" 
+                     style="width: 150px; height: 150px; object-fit: cover;">
+            {% else %}
+                <div class="display-1 text-info mb-3"><i class="fas fa-user-circle"></i></div>
+            {% endif %}
+
+            <h2 class="text-white mb-1">{{ wedkarz.username }}</h2>
+            <span class="badge bg-info text-dark mb-2">Wędkarz</span>
+
+            {% if user.is_authenticated and user != wedkarz %}
+                <div class="mt-2">
+                    <a href="{% url 'obserwuj_uzytkownika' wedkarz.username %}" 
+                        class="btn btn-sm {% if wedkarz.profil in user.profil.obserwuje.all %}btn-outline-secondary{% else %}btn-info{% endif %} fw-bold shadow-sm">
+                        {% if wedkarz.profil in user.profil.obserwuje.all %}
+                            <i class="fas fa-user-minus me-1"></i> Przestań Śledzić
+                        {% else %}
+                            <i class="fas fa-user-plus me-1"></i> Śledź użytkownika
+                        {% endif %}
+                    </a>
+                </div>
+            {% endif %}
+
+            {% if user.is_authenticated and user != wedkarz %}
+                <a href="{% url 'okno_czatu' wedkarz.username %}" class="btn btn-sm btn-info fw-bold ms-2 shadow-sm">
+                    <i class="fas fa-paper-plane me-1"></i> Napisz wiadomość
+                </a>
+            {% endif %}
+            
+            {% if wedkarz == user %}
+                <div class="mt-2">
+                    <a href="{% url 'edytuj_profil' %}" class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-edit me-1"></i>Edytuj profil
+                    </a>
+                </div>
+            {% endif %}
         </div>
+
         <div class="col-md-8 d-flex align-items-center justify-content-around">
             <div class="text-center">
                 <h3 class="text-info mb-0 fw-bold">{{ liczba_ryb }}</h3>
-                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8; letter-spacing: 1px;">Połowów</small>
+                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8;">Połowów</small>
             </div>
             <div class="text-center">
                 <h3 class="text-warning mb-0 fw-bold">{% if najwieksza %}{{ najwieksza.dlugosc_ryby }} cm{% else %}-{% endif %}</h3>
-                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8; letter-spacing: 1px;">Rekord</small>
+                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8;">Rekord</small>
             </div>
             <div class="text-center">
                 <h3 class="text-success mb-0 fw-bold">{{ wedkarz.date_joined|date:"Y" }}</h3>
-                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8; letter-spacing: 1px;">Dołączył</small>
+                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8;">Dołączył</small>
+            </div>
+            <div class="text-center">
+                <h3 class="text-info mb-0 fw-bold">{{ wedkarz.profil.obserwujacy.count }}</h3>
+                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8;">Obserwujących</small>
+            </div>
+            <div class="text-center">
+                <h3 class="text-info mb-0 fw-bold">{{ wedkarz.profil.obserwuje.count }}</h3>
+                <small class="text-light fw-bold text-uppercase" style="opacity: 0.8;">Obserwuje</small>
             </div>
         </div>
     </div>
 
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card bg-dark border-info shadow">
-            <div class="card-body text-white">
-                <h5 class="text-info border-bottom border-secondary pb-2">
-                    <i class="fas fa-info-circle me-2"></i>Wędkarska wizytówka
-                </h5>
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                    <p class="mb-1 text-light small fw-bold text-uppercase" style="opacity: 0.7;">O mnie:</p>
-                    <p class="text-light">
-                        {% if wedkarz.profil.bio %}
-                            {{ wedkarz.profil.bio }}
-                        {% else %}
-                            <span class="text-light opacity-50 italic">Ten wędkarz jeszcze nic o sobie nie napisał.</span>
-                        {% endif %}
-                    </p>
-                </div>
-                <div class="col-md-6 border-start border-secondary">
-                    <p class="mb-1 text-light small fw-bold text-uppercase" style="opacity: 0.7;">Ulubiona metoda:</p>
-                        <p class="text-info fw-bold">
-                            {% if wedkarz.profil.ulubiona_metoda %}
-                                <i class="fas fa-fish me-1"></i>{{ wedkarz.profil.ulubiona_metoda }}
-                            {% else %}
-                                <span class="text-light opacity-50">Nieokreślona</span>
-                            {% endif %}
-                        </p>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark border-info shadow">
+                <div class="card-body text-white">
+                    <h5 class="text-info border-bottom border-secondary pb-2">
+                        <i class="fas fa-info-circle me-2"></i>Wędkarska wizytówka
+                    </h5>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p class="mb-1 text-light small fw-bold text-uppercase" style="opacity: 0.7;">O mnie / Osiągnięcia:</p>
+                            <p class="text-light">
+                                {% if wedkarz.profil.bio %}
+                                    {{ wedkarz.profil.bio }}
+                                {% else %}
+                                    <span class="text-light opacity-50 italic">Ten wędkarz jeszcze nic o sobie nie napisał.</span>
+                                {% endif %}
+                            </p>
+                            <p class="mb-1 text-light small fw-bold text-uppercase mt-3" style="opacity: 0.7;">Lokalizacja i wiek:</p>
+                            <p class="text-light">
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ wedkarz.profil.miejscowosc|default:"Nieznana" }}
+                                {% if wedkarz.profil.wiek %} | <i class="fas fa-birthday-cake text-warning ms-2 me-1"></i> {{ wedkarz.profil.wiek }} lat{% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6 border-start border-secondary">
+                            <p class="mb-1 text-light small fw-bold text-uppercase" style="opacity: 0.7;">Ulubiona metoda:</p>
+                            <p class="text-info fw-bold fs-5">
+                                {% if wedkarz.profil.ulubiona_metoda %}
+                                    <i class="fas fa-fish me-1"></i>{{ wedkarz.profil.ulubiona_metoda }}
+                                {% else %}
+                                    <span class="text-light opacity-50">Nieokreślona</span>
+                                {% endif %}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-    <h3 class="text-info mb-4">Galeria trofeów</h3>
+    <h3 class="text-info mb-4"><i class="fas fa-trophy me-2"></i>Galeria trofeów</h3>
     <div class="row">
         {% for ryba in ryby %}
             <div class="col-md-4 mb-4">
@@ -69,22 +116,22 @@
                     <div class="card-body">
                         <h5 class="card-title text-info fw-bold">{{ ryba.gatunek_ryby }}</h5>
                         <p class="card-text text-light small mb-0">
-                            <i class="fas fa-calendar-alt text-info me-1" style="opacity: 0.8;"></i> 
-                            {{ ryba.data_polowu|date:"d.m.Y" }}
+                            <i class="fas fa-calendar-alt text-info me-1"></i> {{ ryba.data_polowu|date:"d.m.Y" }}
                         </p>
                         <p class="card-text text-light small">
-                            <i class="fas fa-map-marker-alt text-danger me-1" style="opacity: 0.8;"></i> 
-                            {{ ryba.lowisko.nazwa }}
+                            <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ ryba.lowisko.nazwa }}
                         </p>
                     </div>
-                    <div class="card-footer border-secondary text-center">
-                        <span class="badge bg-secondary">{{ ryba.waga_ryby }} kg</span>
-                        <span class="badge bg-secondary">{{ ryba.dlugosc_ryby }} cm</span>
+                    <div class="card-footer border-secondary text-center bg-transparent">
+                        <span class="badge bg-info text-dark">{{ ryba.waga_ryby }} kg</span>
+                        <span class="badge bg-info text-dark">{{ ryba.dlugosc_ryby }} cm</span>
                     </div>
                 </div>
             </div>
         {% empty %}
-            <p class="text-center text-muted">Ten użytkownik nie dodał jeszcze żadnych ryb.</p>
+            <div class="col-12 text-center">
+                <p class="text-light opacity-50 italic">Ten użytkownik nie dodał jeszcze żadnych ryb.</p>
+            </div>
         {% endfor %}
     </div>
 </div>

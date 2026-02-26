@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-info text-center mb-4"><i class="fas fa-search me-2"></i>Znajdź kolegę po kiju</h2>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-6">
+            <form action="{% url 'szukaj_wedkarzy' %}" method="get" class="d-flex">
+                <input type="text" name="q" class="form-control bg-dark text-white border-info shadow-sm" 
+                       placeholder="Wpisz nazwę wędkarza..." value="{{ query|default:'' }}">
+                <button type="submit" class="btn btn-info ms-2 px-4 shadow-sm fw-bold">Szukaj</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for uzytkownik in wyniki %}
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark border-info shadow-sm h-100">
+                    <div class="card-body text-center">
+                        {% if uzytkownik.profil.avatar %}
+                            <img src="{{ uzytkownik.profil.avatar.url }}" class="rounded-circle mb-3 border border-info" 
+                                 style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                            <i class="fas fa-user-circle text-info display-4 mb-3"></i>
+                        {% endif %}
+                        
+                        <h5 class="text-white">{{ uzytkownik.username }}</h5>
+                        <p class="text-light opacity-75 small">
+                            <i class="fas fa-fish me-1"></i>{{ uzytkownik.polowy.count }} połowów
+                        </p>
+                        
+                        <a href="{% url 'profil_publiczny' uzytkownik.username %}" class="btn btn-sm btn-outline-info w-100 fw-bold">
+                            Zobacz profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            {% if query %}
+                <div class="col-12 text-center text-light opacity-50">
+                    <p>Nie znaleziono wędkarza o nazwie "{{ query }}".</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -56,3 +56,30 @@ class Like(models.Model):
 
     class Meta:
         unique_together = ('uzytkownik', 'polow')
+
+class Wiadomosc(models.Model):
+    nadawca = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wyslane_wiadomosci')
+    odbiorca = models.ForeignKey(User, on_delete=models.CASCADE, related_name='odebrane_wiadomosci')
+    tresc = models.TextField()
+    data_wyslania = models.DateTimeField(auto_now_add=True)
+    czy_przeczytana = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-data_wyslania']
+    
+    def __str__(self):
+        return f"Od {self.nadawca.username} do {self.odbiorca.username} - {self.data_wyslania:%H:%M}"
+    
+class Powiadomienie(models.Model):
+    TYPY = (
+        ('obserwacja', 'Nowy obserwujący'),
+    )
+    odbiorca = models.ForeignKey(User, on_delete=models.CASCADE, related_name='powiadomienia')
+    nadawca = models.ForeignKey(User, on_delete=models.CASCADE)
+    typ = models.CharField(max_length=20, choices=TYPY)
+    data = models.DateTimeField(auto_now_add=True)
+    czy_przeczytane = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-data']
+    
