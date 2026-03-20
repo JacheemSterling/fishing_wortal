@@ -1,5 +1,5 @@
 # 🎣 Wortal Wędkarski - FishNet
-Projekt Inżynierski: Implementacja systemu ewidencji połowów.
+Projekt wędkarskiego wortalu internetowego
 
 ## 🚀 Instrukcja uruchomienia
 1. **Pobierz projekt:** `git clone https://github.com/JacheemSterling/fishing_wortal`
