@@ -1,5 +1,5 @@
 # 🎣 Wortal Wędkarski - FishNet
-Projekt wędkarskiego wortalu internetowego
+Projekt wędkarskiego wortalu internetowego.
 
 ## 🚀 Instrukcja uruchomienia
 1. **Pobierz projekt:** `git clone https://github.com/JacheemSterling/fishing_wortal`
