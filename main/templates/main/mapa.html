@@ -52,18 +52,14 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // 1. Inicjalizacja mapy - ustawiamy widok na okolice Redy (54.6, 18.3)
     var map = L.map('map').setView([54.6, 18.3], 10);
 
-    // 2. Dodanie warstwy graficznej mapy
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // 3. Pobranie danych z Django
     var lowiska = {{ lowiska_json|safe }};
 
-    // 4. Prosta pętla dodająca pinezki bez zbędnych funkcji "latania"
     lowiska.forEach(function(l) {
         L.marker([l.lat, l.lon])
             .addTo(map)
