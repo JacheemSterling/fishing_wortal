@@ -7,3 +7,4 @@ Projekt wędkarskiego wortalu internetowego.
    `.\venv\Scripts\activate`
 3. **Zainstaluj biblioteki:** `pip install -r requirements.txt`
 4. **Uruchom:** `python manage.py runserver`
+5. **Aplikacja działa pod adresem 127.0.0.1:8000**
